@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import contractABI from "../abi/EthosLog.json";
 
 // 1. CONFIGURACIÓN DE BASE MAINNET
-const CONTRACT_ADDRESS = "0xFBB2650584557ABA32c7239A10b6439E27287FEe"; 
+const CONTRACT_ADDRESS = "0xAc794b80680ef840560a7D0663EB29232dcf46d3";
 const PINATA_JWT = import.meta.env.VITE_PINATA_JWT;
 const BASE_CHAIN_ID_HEX = "0x2105"; 
 const BASE_CHAIN_ID_DECIMAL = 8453n; 

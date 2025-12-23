@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 // IMPORTANTE: Ahora usamos 'ethos' en lugar de 'blockchain'
-import { publishPost, fetchSinglePost } from './utils/ethos'; 
+import { publishPost, fetchSinglePost } from './utils/oraculo'; 
 import './App.css';
 import backgroundImage from './bg.jpg'; 
 

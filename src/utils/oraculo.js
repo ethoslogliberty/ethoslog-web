@@ -4,8 +4,8 @@ import contractABI from "../abi/EthosLog.json";
 // 1. CONFIGURACIÓN DE BASE MAINNET
 const CONTRACT_ADDRESS = "0xFBB2650584557ABA32c7239A10b6439E27287FEe"; 
 const PINATA_JWT = import.meta.env.VITE_PINATA_JWT;
-const BASE_CHAIN_ID_HEX = "0x2105"; // 8453 en hex para MetaMask
-const BASE_CHAIN_ID_DECIMAL = 8453n; // 8453 como BigInt para Ethers v6
+const BASE_CHAIN_ID_HEX = "0x2105"; 
+const BASE_CHAIN_ID_DECIMAL = 8453n; 
 
 const _uploadToIPFS = async (content) => {
     const response = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
@@ -19,70 +19,72 @@ const _uploadToIPFS = async (content) => {
             pinataMetadata: { name: "EthosLogPost" }
         })
     });
-    if (!response.ok) throw new Error("Fallo al subir al Oráculo (Pinata)");
+    if (!response.ok) throw new Error("Fallo al subir a Pinata");
     const resData = await response.json();
     return resData.IpfsHash;
 };
 
 export const publishPost = async (content) => {
-    // 🔍 SEGURO DE VERSIÓN
-    alert("SISTEMA ORÁCULO V.FINAL - BASE MAINNET ACTIVADO");
+    // 🔍 SEGURO DE VERSIÓN V1000
+    console.log("--- INICIANDO PROTOCOLO ORÁCULO V1000 ---");
 
-    if (!window.ethereum) throw new Error("Instala MetaMask para continuar");
+    if (!window.ethereum) throw new Error("Wallet no detectada");
 
     const provider = new ethers.BrowserProvider(window.ethereum);
     
-    // VERIFICACIÓN Y CAMBIO DE RED
+    // VERIFICACIÓN DE RED
     const network = await provider.getNetwork();
     if (network.chainId !== BASE_CHAIN_ID_DECIMAL) {
-        try {
-            await window.ethereum.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: BASE_CHAIN_ID_HEX }],
-            });
-            // Forzamos recarga para limpiar el estado de la red y evitar NETWORK_ERROR
-            window.location.reload();
-            return;
-        } catch (switchError) {
-            // Si la red no está agregada en MetaMask, podrías intentar agregarla aquí
-            throw new Error("Por favor, cambia a la red BASE MAINNET en tu billetera.");
-        }
+        await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: BASE_CHAIN_ID_HEX }],
+        });
+        window.location.reload();
+        return;
     }
 
     const signer = await provider.getSigner();
-    const fee = ethers.parseEther("0.0004"); 
+    const userAddress = await signer.getAddress(); // Dirección explícita
 
     try {
         // --- PASO 1: IPFS ---
         const ipfsHash = await _uploadToIPFS(content);
+        console.log("IPFS Exitoso. CID:", ipfsHash);
 
-        // --- PASO 2: CODIFICACIÓN MANUAL (Evita el error data: "") ---
+        // --- PASO 2: CODIFICACIÓN DE DATOS ---
+        // Usamos la interfaz para generar los bytes que el contrato espera recibir
         const iface = new ethers.Interface(contractABI);
         const encodedData = iface.encodeFunctionData("publishEntry", [ipfsHash]);
-
-        // --- PASO 3: ENVÍO DIRECTO ---
-        const tx = await signer.sendTransaction({
-            to: CONTRACT_ADDRESS,
-            data: encodedData,  // Instrucciones explícitas para el contrato
-            value: fee,
-            gasLimit: 120000    // Suficiente para una escritura en Base
-        });
         
-        console.log("Transacción enviada:", tx.hash);
+        console.log("BYTES GENERADOS PARA BASE:", encodedData);
+
+        // --- PASO 3: ENVÍO MANUAL ---
+        // Construimos el objeto de transacción con datos explícitos
+        const txParams = {
+            to: CONTRACT_ADDRESS,
+            from: userAddress,
+            data: encodedData,  // <- ESTO ES LO QUE NO PUEDE IR VACÍO
+            value: ethers.parseEther("0.0004"),
+            gasLimit: 150000 
+        };
+
+        const tx = await signer.sendTransaction(txParams);
+        
+        console.log("Transacción enviada. Hash:", tx.hash);
         await tx.wait();
         return ipfsHash;
 
     } catch (error) {
-        console.error("Error técnico:", error);
-        if (error.code === 'ACTION_REJECTED') throw new Error("Transacción cancelada.");
-        throw new Error(error.reason || error.message || "Error en la red Base");
+        console.error("Detalle técnico del error:", error);
+        if (error.code === 'ACTION_REJECTED') throw new Error("Cancelado por el usuario.");
+        throw new Error(error.reason || error.message || "Fallo en la red Base");
     }
 };
 
 export const fetchSinglePost = async (cid) => {
     try {
         const response = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
-        if (!response.ok) throw new Error("Cid no encontrado en IPFS.");
+        if (!response.ok) throw new Error("Cid no encontrado.");
         return await response.json();
     } catch (error) {
         throw new Error("Error al consultar el Oráculo.");

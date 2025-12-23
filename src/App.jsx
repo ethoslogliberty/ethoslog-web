@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { publishPost, fetchSinglePost } from './utils/ethos'; // Asegúrate de que se llame ethos.js
+// IMPORTANTE: Ahora usamos 'ethos' en lugar de 'blockchain'
+import { publishPost, fetchSinglePost } from './utils/ethos'; 
 import './App.css';
 import backgroundImage from './bg.jpg'; 
 
@@ -11,7 +12,7 @@ function App() {
   const [foundPost, setFoundPost] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   
-  // SOLUCIÓN AL ERROR #418 (Hydration Mismatch)
+  // Solución al error de hidratación #418
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ function App() {
     setStatus('🏛️ CONSULTANDO AL ORÁCULO...');
 
     try {
-      // Llamada a la lógica manual de ethos.js
+      // Esta función ahora está en utils/ethos.js con la llamada manual
       const ipfsHash = await publishPost(content);
       
       setSearchCID(ipfsHash); 
@@ -46,8 +47,7 @@ function App() {
       );
       setContent(''); 
     } catch (error) {
-      console.error("Error en la publicación:", error);
-      // Extraemos el mensaje de error para mostrarlo en la UI
+      console.error("Error detallado:", error);
       setStatus(`❌ ERROR: ${error.message}`);
     } finally {
       setIsLoading(false);
@@ -68,7 +68,7 @@ function App() {
     }
   };
 
-  // Evita que React intente renderizar en el servidor antes que en el cliente
+  // No renderizar hasta que el componente esté montado en el cliente
   if (!hasMounted) return null;
 
   return (
@@ -81,7 +81,6 @@ function App() {
           </header>
 
           <div className="grid-container">
-            {/* PANEL DE ESCRITURA */}
             <div className="glass-card">
               <h2 className="card-label">🏛️ TALLAR PENSAMIENTO</h2>
               <textarea 
@@ -100,7 +99,6 @@ function App() {
               {status && <div className="status-msg">{status}</div>}
             </div>
 
-            {/* PANEL DE BÚSQUEDA */}
             <div className="glass-card">
               <h2 className="card-label">🔍 CONSULTAR</h2>
               <div className="search-wrap">

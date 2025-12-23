@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 // IMPORTANTE: Usamos 'oraculo' para forzar al navegador a olvidar el archivo viejo
-import { publishPost, fetchSinglePost } from './utils/oraculo'; 
+import { publishPost, fetchSinglePost } from './utils/oraculo.js?v=999';
 import './App.css';
 import backgroundImage from './bg.jpg'; 
 

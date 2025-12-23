@@ -1,13 +1,12 @@
 import { ethers } from "ethers";
 import contractABI from "../abi/EthosLog.json";
 
-// 1. DIRECCIÓN DEL CONTRATO (BASE MAINNET)
+// 1. CONFIGURACIÓN
 const CONTRACT_ADDRESS = "0xFBB2650584557ABA32c7239A10b6439E27287FEe"; 
 const PINATA_JWT = import.meta.env.VITE_PINATA_JWT;
+const BASE_CHAIN_ID = "0x2105"; // 8453 en hexadecimal (Base Mainnet)
 
-// 2. CONFIGURACIÓN DE RED BASE
-const BASE_CHAIN_ID = "0x2105"; // 8453 en hexadecimal
-
+// Función interna para subir a IPFS
 const _uploadToIPFS = async (content) => {
     const response = await fetch("https://api.pinata.cloud/pinning/pinJSONToIPFS", {
         method: "POST",
@@ -26,75 +25,65 @@ const _uploadToIPFS = async (content) => {
 };
 
 export const publishPost = async (content) => {
-    if (!window.ethereum) throw new Error("Wallet no detectada");
+    // 🔍 SEGURO DE VERSIÓN: Si ves este alert, el código es el correcto.
+    alert("INICIANDO CONEXIÓN MANUAL CON BASE... (V. FINAL)");
 
-    // --- PASO 0: FORZAR CAMBIO A RED BASE ---
-    const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
-    if (currentChainId !== BASE_CHAIN_ID) {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: BASE_CHAIN_ID }],
-            });
-        } catch (switchError) {
-            if (switchError.code === 4902) {
-                await window.ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: BASE_CHAIN_ID,
-                        chainName: 'Base Mainnet',
-                        nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-                        rpcUrls: ['https://mainnet.base.org'],
-                        blockExplorerUrls: ['https://basescan.org']
-                    }],
-                });
-            } else {
-                throw new Error("Por favor, cambia a la red Base Mainnet");
-            }
-        }
-    }
+    if (!window.ethereum) throw new Error("Wallet no detectada");
 
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
-    
-    // Fee requerido por el contrato para evitar require(false)
+
+    // Verificación de Red
+    const network = await provider.getNetwork();
+    if (network.chainId !== 8453n) {
+        try {
+            await window.ethereum.request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: BASE_CHAIN_ID }],
+            });
+        } catch (e) {
+            throw new Error("Por favor, cambia tu billetera a la red BASE MAINNET.");
+        }
+    }
+
     const fee = ethers.parseEther("0.0004"); 
 
-  try {
+    try {
         // --- PASO 1: SUBIDA A IPFS ---
         const ipfsHash = await _uploadToIPFS(content);
 
-        // --- PASO 2: GENERACIÓN MANUAL DE DATOS (Solución al error "data: empty") ---
+        // --- PASO 2: GENERACIÓN MANUAL DE DATOS (Anti-Caché) ---
+        // Esto garantiza que el campo "data" de la transacción NO vaya vacío
         const iface = new ethers.Interface(contractABI);
-        const data = iface.encodeFunctionData("publishEntry", [ipfsHash]);
+        const encodedData = iface.encodeFunctionData("publishEntry", [ipfsHash]);
 
         // --- PASO 3: TRANSACCIÓN DIRECTA ---
         const tx = await signer.sendTransaction({
             to: CONTRACT_ADDRESS,
-            data: data,       // Esto asegura que MetaMask reciba las instrucciones
+            data: encodedData,  // Inyectamos el hash de la función manualmente
             value: fee,
-            gasLimit: 150000  // Un poco más de margen para Base
+            gasLimit: 150000    // Margen de seguridad para Base
         });
         
+        console.log("Transacción enviada:", tx.hash);
         await tx.wait();
         return ipfsHash;
 
     } catch (error) {
-        // ... (resto del catch igual) {
+        console.error("Detalle del error:", error);
         if (error.code === 'ACTION_REJECTED') {
-            throw new Error("Transacción cancelada. El pergamino permanece limpio.");
+            throw new Error("Transacción cancelada por el usuario.");
         }
-        if (error.message.includes("insufficient funds")) {
-            throw new Error("Tributo insuficiente en tu bolsa de ETH de BASE.");
-        }
-        throw new Error(error.reason || error.message);
+        throw new Error(error.reason || error.message || "Error desconocido en la blockchain");
     }
 };
 
 export const fetchSinglePost = async (cid) => {
-    const response = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
-    if (!response.ok) throw new Error("No recuperado");
-    const data = await response.json();
-    return { text: data.text, date: data.date };
+    try {
+        const response = await fetch(`https://gateway.pinata.cloud/ipfs/${cid}`);
+        if (!response.ok) throw new Error("No se pudo obtener el pergamino.");
+        return await response.json();
+    } catch (error) {
+        throw new Error("Error al consultar el Oráculo IPFS.");
+    }
 };

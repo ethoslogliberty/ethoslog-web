@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { publishPost, fetchSinglePost } from './utils/ethos';
+import { publishPost, fetchSinglePost } from './utils/ethos'; // Asegúrate de que se llame ethos.js
 import './App.css';
 import backgroundImage from './bg.jpg'; 
 
@@ -11,7 +11,7 @@ function App() {
   const [foundPost, setFoundPost] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   
-  // SOLUCIÓN AL ERROR #418: Seguro de montaje
+  // SOLUCIÓN AL ERROR #418 (Hydration Mismatch)
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
@@ -25,6 +25,7 @@ function App() {
     setStatus('🏛️ CONSULTANDO AL ORÁCULO...');
 
     try {
+      // Llamada a la lógica manual de ethos.js
       const ipfsHash = await publishPost(content);
       
       setSearchCID(ipfsHash); 
@@ -45,7 +46,8 @@ function App() {
       );
       setContent(''); 
     } catch (error) {
-      console.error(error);
+      console.error("Error en la publicación:", error);
+      // Extraemos el mensaje de error para mostrarlo en la UI
       setStatus(`❌ ERROR: ${error.message}`);
     } finally {
       setIsLoading(false);
@@ -66,7 +68,7 @@ function App() {
     }
   };
 
-  // Si no ha montado, no renderizamos para evitar el error de Hydration
+  // Evita que React intente renderizar en el servidor antes que en el cliente
   if (!hasMounted) return null;
 
   return (
@@ -79,6 +81,7 @@ function App() {
           </header>
 
           <div className="grid-container">
+            {/* PANEL DE ESCRITURA */}
             <div className="glass-card">
               <h2 className="card-label">🏛️ TALLAR PENSAMIENTO</h2>
               <textarea 
@@ -87,12 +90,17 @@ function App() {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
               />
-              <button onClick={handlePublish} disabled={isLoading} className="btn-primary">
+              <button 
+                onClick={handlePublish} 
+                disabled={isLoading} 
+                className="btn-primary"
+              >
                 {isLoading ? 'TALLANDO...' : 'INMORTALIZAR'}
               </button>
               {status && <div className="status-msg">{status}</div>}
             </div>
 
+            {/* PANEL DE BÚSQUEDA */}
             <div className="glass-card">
               <h2 className="card-label">🔍 CONSULTAR</h2>
               <div className="search-wrap">
@@ -102,7 +110,11 @@ function App() {
                   value={searchCID}
                   onChange={(e) => setSearchCID(e.target.value)}
                 />
-                <button onClick={handleSearch} disabled={isSearching} className="btn-gold">
+                <button 
+                  onClick={handleSearch} 
+                  disabled={isSearching} 
+                  className="btn-gold"
+                >
                   {isSearching ? '...' : 'IR'}
                 </button>
               </div>

@@ -1,0 +1,6 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Evita scrolls accidentales */
+  background: #000; /* Fondo negro por si la imagen tarda en cargar */
+}

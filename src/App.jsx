@@ -1,0 +1,126 @@
+import { useState } from 'react';
+import { publishPost, fetchSinglePost } from './utils/blockchain';
+import './App.css';
+import backgroundImage from './bg.jpg'; 
+
+function App() {
+  const [content, setContent] = useState('');
+  const [status, setStatus] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchCID, setSearchCID] = useState('');
+  const [foundPost, setFoundPost] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handlePublish = async () => {
+    if (!content.trim()) return;
+    
+    setIsLoading(true);
+    setStatus('🏛️ CONSULTANDO AL ORÁCULO...');
+
+    try {
+      // Ahora publishPost maneja el orden: 1. Gas Check -> 2. Pinata -> 3. Tx
+      const ipfsHash = await publishPost(content);
+      
+      setSearchCID(ipfsHash); 
+      setStatus(
+        <div className="success-box">
+          <p style={{color: '#84754e', fontWeight: 'bold', margin: '5px 0'}}>¡INMORTALIZADO!</p>
+          <div className="cid-display">{ipfsHash}</div>
+          <button 
+            onClick={() => {
+              navigator.clipboard.writeText(ipfsHash);
+              alert("CID Copiado al Pergamino");
+            }}
+            className="copy-btn"
+          >
+            COPIAR CID
+          </button>
+        </div>
+      );
+      setContent(''); 
+    } catch (error) {
+      console.error(error);
+      setStatus(`⚠️ ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!searchCID.trim()) return;
+    setIsSearching(true);
+    setFoundPost(null);
+    try {
+      const data = await fetchSinglePost(searchCID.trim());
+      setFoundPost(data);
+    } catch (error) {
+      alert("Inscripción no recuperada. Revisa el CID.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  return (
+    <div className="page-wrapper" style={{ backgroundImage: `url(${backgroundImage})` }}>
+      <div className="glass-overlay">
+        <div className="container">
+          
+          <header className="main-header">
+            <h1 className="greek-title">ΕΘΟΣ ΛΟΓ</h1>
+            <div className="gold-separator"></div>
+            <div className="motto">ΑΙΩΝΙΑ • INMUTABLE • LIBRE</div>
+          </header>
+
+          <div className="tools-grid">
+            <div className="glass-card">
+              <h2 className="card-label">📜 ESCRIBIR</h2>
+              <textarea 
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Escribe tu verdad para la eternidad..."
+                className="greek-textarea"
+                disabled={isLoading}
+              />
+              <button onClick={handlePublish} disabled={isLoading} className="btn-primary">
+                {isLoading ? 'TALLANDO...' : 'INMORTALIZAR'}
+              </button>
+              {status && <div className="status-msg">{status}</div>}
+            </div>
+
+            <div className="glass-card">
+              <h2 className="card-label">🔍 CONSULTAR</h2>
+              <div className="search-wrap">
+                <input 
+                  className="greek-input"
+                  placeholder="Pegar CID del Oráculo..."
+                  value={searchCID}
+                  onChange={(e) => setSearchCID(e.target.value)}
+                />
+                <button onClick={handleSearch} disabled={isSearching} className="btn-gold">
+                  {isSearching ? '...' : 'IR'}
+                </button>
+              </div>
+              
+              {foundPost && (
+                <div className="result-display">
+                  <p className="result-text">"{foundPost.text}"</p>
+                  <div className="result-date">
+                    REGISTRADO: {new Date(foundPost.date).toLocaleDateString()}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="manifesto-box">
+            <p>"En la intersección de la razón clásica y la criptografía moderna..."</p>
+          </div>
+
+          <footer className="main-footer">ETHEREUM MAINNET • RED IPFS • MMXXV</footer>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;

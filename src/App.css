@@ -1,32 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital@1&display=swap');
 
+/* Reset Universal */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
-body {
-  margin: 0;
-  font-family: 'Playfair Display', serif;
+html, body {
+  height: auto !important;
+  min-height: 100vh;
   background-color: #1a1a1a;
+  font-family: 'Playfair Display', serif;
+  color: #ffffff;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
+/* Contenedor Principal: Flujo natural para scroll infinito */
 .app-container {
-  min-height: 100vh;
+  position: relative;
   width: 100%;
+  min-height: 100vh;
+  display: block; 
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  display: block; /* Permite scroll natural */
 }
 
+/* Overlay: Centrado total */
 .overlay {
+  width: 100%;
   min-height: 100vh;
   background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
-  padding: 40px 20px;
+  backdrop-filter: blur(3px);
+  padding: 60px 20px 100px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,154 +43,181 @@ body {
 
 .main-content {
   width: 100%;
-  max-width: 1000px;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Header elegante */
-.header { margin-bottom: 40px; text-align: center; }
+/* Header Centrado */
+.header {
+  margin-bottom: 50px;
+  text-align: center;
+}
+
 .title-ethos {
   font-family: 'Cinzel', serif;
-  font-size: clamp(2rem, 8vw, 4rem);
-  letter-spacing: 12px;
-  color: #fff;
-  text-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+  font-size: clamp(2.5rem, 10vw, 5rem);
+  letter-spacing: 15px;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
 }
 
-/* Grid equilibrado */
+.subtitle {
+  font-family: 'Cinzel', serif;
+  color: #d4af37;
+  letter-spacing: 5px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+/* Grid de Cartas */
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+  width: 100%;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  padding: 25px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  transition: 0.3s ease;
-}
-
-.glass-card:hover {
-  border-color: #84754e;
   background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  padding: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
 }
 
-/* Herramientas de texto estilizadas (Sin look Windows) */
+/* --- HERRAMIENTAS DE TAMAÑO (Botones Redondos) --- */
 .scribe-tools {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  padding: 0 5px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
 }
 
 .tool-select {
-  background: none;
+  background: transparent;
   color: #d4af37;
-  border: none;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  padding: 5px 10px;
   font-family: 'Cinzel', serif;
-  font-size: 0.75rem;
+  outline: none;
   cursor: pointer;
+  appearance: none;
 }
 
-.size-controls { display: flex; align-items: center; gap: 12px; }
+.tool-select option { background: #1a1a1a; color: #fff; }
+
+.size-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
 
 .btn-tool {
-  background: none;
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: transparent;
+  border: 1px solid #d4af37;
   color: #d4af37;
-  width: 28px;
-  height: 28px;
-  border-radius: 2px; /* Cuadrado minimalista */
+  width: 24px;
+  height: 24px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 1rem;
+  border-radius: 50%; /* Botones circulares */
   transition: 0.2s;
+  appearance: none;
+  outline: none;
 }
 
-.btn-tool:hover { background: rgba(212, 175, 55, 0.1); border-color: #d4af37; }
+.btn-tool:hover {
+  background: #d4af37;
+  color: #1a1a1a;
+}
 
-/* Textarea tipo Pergamino */
+.size-display {
+  color: #d4af37;
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  min-width: 25px;
+  text-align: center;
+}
+
+/* --- BOTÓN PRINCIPAL (Sin cuadrados de sistema) --- */
+.btn-primary {
+  width: 100%;
+  padding: 18px;
+  background: #84754e;
+  color: #ffffff;
+  border: none;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 2px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: 0.3s ease;
+  outline: none;
+  appearance: none; /* Elimina look Windows */
+  display: block;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #d4af37;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+/* Textarea y Buscador */
 .greek-textarea {
   width: 100%;
-  height: 200px;
+  height: 180px;
   background: rgba(253, 250, 240, 0.95);
   border: none;
   padding: 20px;
-  font-family: inherit;
   color: #1a1a1a;
   resize: none;
   outline: none;
-  line-height: 1.6;
 }
 
-/* Buscador Compacto */
 .search-wrap {
   display: flex;
   border-bottom: 1px solid rgba(212, 175, 55, 0.5);
+  background: transparent;
   margin-bottom: 20px;
 }
 
 .greek-input {
   flex: 1;
-  background: none;
+  background: transparent;
   border: none;
-  padding: 10px;
-  color: #fff;
-  font-family: monospace;
-  font-size: 0.85rem;
+  padding: 12px;
+  color: #ffffff;
   outline: none;
 }
 
 .btn-gold {
-  background: none;
+  background: transparent;
   color: #d4af37;
   border: none;
   font-family: 'Cinzel', serif;
-  padding: 0 15px;
-  cursor: pointer;
-  letter-spacing: 2px;
-}
-
-/* Botón Principal */
-.btn-primary {
-  width: 100%;
-  padding: 15px;
-  background: #84754e;
-  color: #fff;
-  border: none;
-  font-family: 'Cinzel', serif;
-  letter-spacing: 2px;
-  margin-top: 15px;
   cursor: pointer;
 }
 
-/* Footer que no corta la página */
 .main-footer {
-  margin-top: 60px;
-  padding-bottom: 40px;
+  padding: 60px 0;
   color: #84754e;
-  font-size: 0.7rem;
-  letter-spacing: 3px;
   text-align: center;
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.9);
-  display: flex; align-items: center; justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: #fdfaf0;
-  width: 90%;
-  max-width: 700px;
-  max-height: 80vh;
-  padding: 40px;
-  overflow-y: auto;
-  position: relative;
+  letter-spacing: 4px;
+  font-size: 0.75rem;
+  width: 100%;
 }

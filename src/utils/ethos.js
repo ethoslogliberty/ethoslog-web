@@ -61,23 +61,27 @@ export const publishPost = async (content) => {
     // Fee requerido por el contrato para evitar require(false)
     const fee = ethers.parseEther("0.0004"); 
 
-    try {
+  try {
         // --- PASO 1: SUBIDA A IPFS ---
-        // Subimos el contenido primero para obtener el Hash real
         const ipfsHash = await _uploadToIPFS(content);
 
-        // --- PASO 2: TRANSACCIÓN FINAL ---
-        // Llamada directa a publishEntry eliminando la simulación placeholder
-        // Usamos un gasLimit manual para asegurar que la transacción se procese
-        const tx = await contract.publishEntry(ipfsHash, { 
+        // --- PASO 2: GENERACIÓN MANUAL DE DATOS (Solución al error "data: empty") ---
+        const iface = new ethers.Interface(contractABI);
+        const data = iface.encodeFunctionData("publishEntry", [ipfsHash]);
+
+        // --- PASO 3: TRANSACCIÓN DIRECTA ---
+        const tx = await signer.sendTransaction({
+            to: CONTRACT_ADDRESS,
+            data: data,       // Esto asegura que MetaMask reciba las instrucciones
             value: fee,
-            gasLimit: 120000 
+            gasLimit: 150000  // Un poco más de margen para Base
         });
         
         await tx.wait();
         return ipfsHash;
 
     } catch (error) {
+        // ... (resto del catch igual) {
         if (error.code === 'ACTION_REJECTED') {
             throw new Error("Transacción cancelada. El pergamino permanece limpio.");
         }

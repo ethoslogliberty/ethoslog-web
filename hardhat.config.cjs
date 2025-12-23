@@ -1,22 +1,30 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("dotenv").config();
 
+// Creamos una variable segura para que no dé error si alguna red no tiene la clave
+const privateKey = process.env.PRIVATE_KEY || "0000000000000000000000000000000000000000000000000000000000000000";
+
 module.exports = {
-  solidity: "0.8.19", // Mantengo tu versión 0.8.19
+  solidity: "0.8.19",
   networks: {
-    // Tu red de pruebas actual
+    // ESTA ES LA QUE NECESITAMOS AHORA
+    base: {
+      url: "https://mainnet.base.org",
+      accounts: [privateKey],
+      },
     "base-sepolia": {
       url: "https://sepolia.base.org",
-      accounts: [process.env.PRIVATE_KEY],
+      accounts: [privateKey],
     },
-    // NUEVA: Red Principal de Ethereum
-    "mainnet": {
-      url: process.env.RPC_URL_MAINNET || "https://eth.llamarpc.com", 
-      accounts: [process.env.PRIVATE_KEY],
+    mainnet: {
+      url: "https://eth.llamarpc.com", 
+      accounts: [privateKey],
     }
   },
-  // ESTO ES LO QUE FALTA PARA LA VERIFICACIÓN
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY
+    // Para Base se usa Basescan, pero Hardhat lo maneja con esta misma sección
+    apiKey: {
+      base: process.env.BASESCAN_API_KEY || ""
+    }
   }
 };

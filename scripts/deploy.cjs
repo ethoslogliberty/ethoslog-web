@@ -1,33 +1,32 @@
-const ethers = require("ethers");
+const hre = require("hardhat");
 
 async function main() {
-  console.log("-----------------------------------------");
-  console.log("Despliegue de Emergencia en Base Sepolia...");
+  console.log("--- Iniciando despliegue de EthosLog en Base ---");
+
+  // Obtener la cuenta que despliega
+  const [deployer] = await hre.ethers.getSigners();
+  console.log("Desplegando con la cuenta:", deployer.address);
+
+  // Obtener el contrato
+  const EthosLog = await hre.ethers.getContractFactory("EthosLog");
   
-  // PEGALA AQUÍ DIRECTAMENTE (solo esta vez)
-  const pk = "21d51393252396009fe872a02f68892aa1d0fe7e86dbfdbc5c7af20e6104fde1"; 
+  console.log("Desplegando contrato...");
+  const ethosLog = await EthosLog.deploy();
+
+  // En ethers v6 esperamos a que se complete el despliegue así:
+  await ethosLog.waitForDeployment();
+
+  const address = await ethosLog.getAddress();
   
-  const artifact = require("../artifacts/contracts/EthosLog.sol/EthosLog.json");
-  const provider = new ethers.providers.JsonRpcProvider("https://sepolia.base.org");
-  const wallet = new ethers.Wallet(pk, provider);
-
-  console.log("Desplegando desde:", wallet.address);
-
-  const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode, wallet);
-
-  console.log("Enviando transacción...");
-  const contract = await factory.deploy();
-
-  console.log("Esperando confirmación...");
-  await contract.deployed();
-
   console.log("-----------------------------------------");
-  console.log("¡POR FIN! CONTRATO VIVO");
-  console.log("Dirección:", contract.address);
+  console.log("✅ Contrato Inmortalizado!");
+  console.log("Dirección del contrato:", address);
   console.log("-----------------------------------------");
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { publishPost, fetchSinglePost } from './utils/blockchain';
+import { publishPost, fetchSinglePost } from './utils/ethos';
 import './App.css';
 import backgroundImage from './bg.jpg'; 
 

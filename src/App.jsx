@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { publishPost, fetchSinglePost } from './utils/ethos';
 import './App.css';
 import backgroundImage from './bg.jpg'; 
@@ -10,6 +10,13 @@ function App() {
   const [searchCID, setSearchCID] = useState('');
   const [foundPost, setFoundPost] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
+  
+  // SOLUCIÓN AL ERROR #418: Seguro de montaje
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   const handlePublish = async () => {
     if (!content.trim()) return;
@@ -18,7 +25,6 @@ function App() {
     setStatus('🏛️ CONSULTANDO AL ORÁCULO...');
 
     try {
-      // Ahora publishPost maneja el orden: 1. Gas Check -> 2. Pinata -> 3. Tx
       const ipfsHash = await publishPost(content);
       
       setSearchCID(ipfsHash); 
@@ -40,7 +46,7 @@ function App() {
       setContent(''); 
     } catch (error) {
       console.error(error);
-      setStatus(`⚠️ ${error.message}`);
+      setStatus(`❌ ERROR: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -51,35 +57,35 @@ function App() {
     setIsSearching(true);
     setFoundPost(null);
     try {
-      const data = await fetchSinglePost(searchCID.trim());
-      setFoundPost(data);
+      const post = await fetchSinglePost(searchCID);
+      setFoundPost(post);
     } catch (error) {
-      alert("Inscripción no recuperada. Revisa el CID.");
+      alert("No se encontró el registro en el Oráculo.");
     } finally {
       setIsSearching(false);
     }
   };
 
+  // Si no ha montado, no renderizamos para evitar el error de Hydration
+  if (!hasMounted) return null;
+
   return (
-    <div className="page-wrapper" style={{ backgroundImage: `url(${backgroundImage})` }}>
-      <div className="glass-overlay">
-        <div className="container">
-          
-          <header className="main-header">
-            <h1 className="greek-title">ΕΘΟΣ ΛΟΓ</h1>
-            <div className="gold-separator"></div>
-            <div className="motto">ΑΙΩΝΙΑ • INMUTABLE • LIBRE</div>
+    <div className="app-container" style={{ backgroundImage: `url(${backgroundImage})` }}>
+      <div className="overlay">
+        <div className="main-content">
+          <header className="header">
+            <h1 className="title-ethos">ETHOSLOG</h1>
+            <p className="subtitle">LIBERTAD INMUTABLE EN BASE</p>
           </header>
 
-          <div className="tools-grid">
+          <div className="grid-container">
             <div className="glass-card">
-              <h2 className="card-label">📜 ESCRIBIR</h2>
+              <h2 className="card-label">🏛️ TALLAR PENSAMIENTO</h2>
               <textarea 
+                className="greek-textarea"
+                placeholder="Escribe aquí tu verdad eterna..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="Escribe tu verdad para la eternidad..."
-                className="greek-textarea"
-                disabled={isLoading}
               />
               <button onClick={handlePublish} disabled={isLoading} className="btn-primary">
                 {isLoading ? 'TALLANDO...' : 'INMORTALIZAR'}

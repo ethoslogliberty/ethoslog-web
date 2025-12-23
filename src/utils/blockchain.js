@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import contractABI from "../abi/EthosLog.json";
 
 // 1. DIRECCIÓN DEL CONTRATO (BASE MAINNET)
-const CONTRACT_ADDRESS = "0xFBB2650584557ABA32c7239A10b6439E27287FEe";
+const CONTRACT_ADDRESS = "0xFBB2650584557ABA32c7239A10b6439E27287FEe"; 
 const PINATA_JWT = import.meta.env.VITE_PINATA_JWT;
 
 // 2. CONFIGURACIÓN DE RED BASE
@@ -58,16 +58,17 @@ export const publishPost = async (content) => {
     const signer = await provider.getSigner();
     const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
     
-    // Fee ajustado a 0.0004 ETH para evitar el error require(false)
+    // Fee requerido por el contrato para evitar require(false)
     const fee = ethers.parseEther("0.0004"); 
 
     try {
         // --- PASO 1: SUBIDA A IPFS ---
-        // Eliminamos la simulación con "placeholder" para evitar bloqueos
+        // Subimos el contenido primero para obtener el Hash real
         const ipfsHash = await _uploadToIPFS(content);
 
         // --- PASO 2: TRANSACCIÓN FINAL ---
-        // Usamos un gasLimit manual para asegurar estabilidad en Base
+        // Llamada directa a publishEntry eliminando la simulación placeholder
+        // Usamos un gasLimit manual para asegurar que la transacción se procese
         const tx = await contract.publishEntry(ipfsHash, { 
             value: fee,
             gasLimit: 120000 

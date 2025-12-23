@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-// IMPORTANTE: Ahora usamos 'ethos' en lugar de 'blockchain'
+// IMPORTANTE: Usamos 'oraculo' para forzar al navegador a olvidar el archivo viejo
 import { publishPost, fetchSinglePost } from './utils/oraculo'; 
 import './App.css';
 import backgroundImage from './bg.jpg'; 
@@ -12,11 +12,13 @@ function App() {
   const [foundPost, setFoundPost] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   
-  // Solución al error de hidratación #418
+  // SOLUCIÓN AL ERROR #418: Seguro de hidratación
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
     setHasMounted(true);
+    // Rastro en consola para verificar que el código nuevo está cargado
+    console.log("SISTEMA DE DATOS MANUALES V.999 CARGADO - RED BASE");
   }, []);
 
   const handlePublish = async () => {
@@ -26,7 +28,7 @@ function App() {
     setStatus('🏛️ CONSULTANDO AL ORÁCULO...');
 
     try {
-      // Esta función ahora está en utils/ethos.js con la llamada manual
+      // Llamada a la lógica en oraculo.js que ya tiene los datos manuales
       const ipfsHash = await publishPost(content);
       
       setSearchCID(ipfsHash); 
@@ -47,7 +49,7 @@ function App() {
       );
       setContent(''); 
     } catch (error) {
-      console.error("Error detallado:", error);
+      console.error("Error en publicación:", error);
       setStatus(`❌ ERROR: ${error.message}`);
     } finally {
       setIsLoading(false);
@@ -68,7 +70,7 @@ function App() {
     }
   };
 
-  // No renderizar hasta que el componente esté montado en el cliente
+  // No renderizar hasta que el componente esté montado para evitar Hydration Mismatch
   if (!hasMounted) return null;
 
   return (

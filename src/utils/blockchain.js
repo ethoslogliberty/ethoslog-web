@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
 import contractABI from "../abi/EthosLog.json";
 
-// 1. NUEVA DIRECCIÓN DEL CONTRATO (BASE MAINNET)
-const CONTRACT_ADDRESS = "0xFBB2650584557ABA32c7239A10b6439E27287FEe"; 
+// 1. DIRECCIÓN DEL CONTRATO (BASE MAINNET)
+const CONTRACT_ADDRESS = "0xFBB2650584557ABA32c7239A10b6439E27287FEe";
 const PINATA_JWT = import.meta.env.VITE_PINATA_JWT;
 
 // 2. CONFIGURACIÓN DE RED BASE
@@ -37,7 +37,6 @@ export const publishPost = async (content) => {
                 params: [{ chainId: BASE_CHAIN_ID }],
             });
         } catch (switchError) {
-            // Si la red no está agregada en MetaMask, la agregamos automáticamente
             if (switchError.code === 4902) {
                 await window.ethereum.request({
                     method: 'wallet_addEthereumChain',
@@ -59,18 +58,21 @@ export const publishPost = async (content) => {
     const signer = await provider.getSigner();
     const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
     
-    // Bajamos el fee a 0.0001 ETH (aprox 0.30 USD) acorde a la eficiencia de Base
-    const fee = ethers.parseEther("0.0004");
+    // Fee ajustado a 0.0004 ETH para evitar el error require(false)
+    const fee = ethers.parseEther("0.0004"); 
 
     try {
-        // --- PASO 1: SIMULACIÓN EN BASE ---
-        await contract.publishEntry.estimateGas("placeholder", { value: fee });
-
-        // --- PASO 2: SUBIDA A IPFS ---
+        // --- PASO 1: SUBIDA A IPFS ---
+        // Eliminamos la simulación con "placeholder" para evitar bloqueos
         const ipfsHash = await _uploadToIPFS(content);
 
-        // --- PASO 3: TRANSACCIÓN FINAL ---
-        const tx = await contract.publishEntry(ipfsHash, { value: fee });
+        // --- PASO 2: TRANSACCIÓN FINAL ---
+        // Usamos un gasLimit manual para asegurar estabilidad en Base
+        const tx = await contract.publishEntry(ipfsHash, { 
+            value: fee,
+            gasLimit: 120000 
+        });
+        
         await tx.wait();
         return ipfsHash;
 

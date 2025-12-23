@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital@1&display=swap');
 
-/* Reset y Base */
+/* Reset Total */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -8,23 +8,22 @@
 }
 
 html, body {
-  height: auto;
-  min-height: 100%;
+  height: auto !important; /* Permite que el documento crezca */
+  min-height: 100vh;
   background-color: #1a1a1a;
   margin: 0;
   font-family: 'Playfair Display', serif;
-  overflow-x: hidden;
 }
 
-/* Contenedor Principal: Desbloqueado para flujo natural */
+/* El fondo se aplica al BODY o a un div fijo para que no interfiera con el scroll */
 .app-container {
-  position: relative;
   width: 100%;
   min-height: 100vh;
-  display: block; 
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
+  background-attachment: fixed; /* Fondo quieto */
+  position: relative;
+  display: block; /* IMPORTANTE: Block permite scroll natural */
 }
 
 .overlay {
@@ -32,7 +31,7 @@ html, body {
   min-height: 100vh;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(3px);
-  padding: 80px 20px;
+  padding: 60px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -42,7 +41,6 @@ html, body {
   width: 100%;
   max-width: 1100px;
   text-align: center;
-  flex: 1 0 auto; 
 }
 
 /* Header */
@@ -52,31 +50,21 @@ html, body {
   font-size: clamp(2.5rem, 10vw, 5rem);
   letter-spacing: 15px;
   color: #fff;
-  text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
 }
 .subtitle {
   font-family: 'Cinzel', serif;
   color: #84754e;
   letter-spacing: 5px;
-  font-size: 0.9rem;
-  font-weight: bold;
 }
 
-.gold-separator { 
-  width: 80px; 
-  height: 3px; 
-  background: #84754e; 
-  margin: 15px auto; 
-}
-
-/* Grid y Tarjetas */
+/* Grid */
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: 30px;
-  margin-bottom: 40px;
 }
 
+/* Glass Cards con HOVER RECUPERADO */
 .glass-card {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(15px);
@@ -84,41 +72,41 @@ html, body {
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  transition: 0.3s;
+  transition: all 0.3s ease; /* Suaviza el hover */
+  position: relative;
+  z-index: 10; /* Asegura que esté sobre el fondo para detectar el mouse */
+  margin-bottom: 20px;
+}
+
+.glass-card:hover {
+  transform: translateY(-8px); /* Elevación */
+  border-color: #d4af37; /* Brillo dorado */
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .card-label {
   font-family: 'Cinzel', serif;
   color: #d4af37;
+  margin-bottom: 20px;
   border-bottom: 1px solid rgba(132, 117, 78, 0.3);
   padding-bottom: 10px;
-  margin-bottom: 20px;
 }
 
-/* Editor Tools */
+/* Editor */
 .scribe-tools {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
   padding: 10px;
-  border: 1px solid rgba(132, 117, 78, 0.3);
-  border-bottom: none;
+  border-radius: 4px 4px 0 0;
 }
-
-.tool-select { background: transparent; color: #d4af37; border: none; font-family: 'Cinzel', serif; font-size: 0.7rem; outline: none; cursor: pointer; }
-.size-controls { display: flex; align-items: center; gap: 8px; }
-.btn-tool { background: rgba(212, 175, 55, 0.1); border: 1px solid #d4af37; color: #d4af37; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
-.size-display { color: #fff; font-family: monospace; font-size: 0.8rem; }
 
 .greek-textarea {
   width: 100%;
   height: 180px;
   background: rgba(253, 250, 240, 0.95);
   padding: 20px;
-  color: #2c2c2c;
+  border: none;
   outline: none;
   resize: none;
   border-radius: 0 0 4px 4px;
@@ -126,60 +114,36 @@ html, body {
 
 /* Botones */
 .btn-primary, .btn-gold {
+  width: 100%;
   padding: 18px;
   background: #84754e;
   color: white;
   border: none;
   font-family: 'Cinzel', serif;
-  letter-spacing: 3px;
   cursor: pointer;
   transition: 0.3s;
-}
-.btn-primary:hover, .btn-gold:hover { background: #a39265; }
-
-/* Buscador y Resultados */
-.search-wrap { display: flex; background: #fff; overflow: hidden; border-radius: 4px; }
-.greek-input { flex: 1; padding: 15px; border: none; outline: none; font-family: monospace; }
-
-.result-display { margin-top: 20px; padding: 20px; background: rgba(253, 250, 240, 0.1); border-left: 3px solid #d4af37; text-align: left; }
-.result-text { font-style: italic; color: #f0eada; line-height: 1.6; }
-.clickable { cursor: pointer; transition: 0.2s; }
-.clickable:hover { transform: scale(1.01); }
-
-/* Manifesto y Footer */
-.manifesto-box {
-  margin-top: 80px;
-  padding: 40px;
-  border-top: 1px solid rgba(132, 117, 78, 0.3);
-  color: #f0eada;
-  font-style: italic;
-  opacity: 0.8;
+  margin-top: 15px;
 }
 
+.btn-primary:hover {
+  background: #d4af37;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+/* Resultados */
+.result-display {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(253, 250, 240, 0.1);
+  border-left: 3px solid #d4af37;
+  cursor: pointer;
+}
+
+/* Footer (Ahora al final del scroll) */
 .main-footer {
-  flex-shrink: 0;
-  padding: 60px 0;
+  margin-top: 80px;
+  padding: 40px 0;
   color: #84754e;
-  font-size: 0.7rem;
+  text-align: center;
   letter-spacing: 4px;
-  width: 100%;
 }
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(0, 0, 0, 0.95);
-  display: flex; justify-content: center; align-items: center;
-  z-index: 2000; backdrop-filter: blur(10px);
-}
-.modal-content {
-  background: rgba(253, 250, 240, 0.98);
-  width: 90%; max-width: 800px; max-height: 85vh;
-  padding: 40px; border: 2px solid #84754e;
-  display: flex; flex-direction: column;
-}
-.full-text-scroll { overflow-y: auto; margin-top: 20px; text-align: left; }
-.full-text-scroll::-webkit-scrollbar { width: 8px; }
-.full-text-scroll::-webkit-scrollbar-thumb { background: #84754e; border-radius: 4px; }
-.result-text-large { font-size: 1.4rem; line-height: 1.8; color: #1a1a1a; white-space: pre-wrap; }

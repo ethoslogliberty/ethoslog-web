@@ -58,15 +58,16 @@ export const publishPost = async (content) => {
         
         console.log("BYTES GENERADOS PARA BASE:", encodedData);
 
-        // --- PASO 3: ENVÍO MANUAL ---
-        // Construimos el objeto de transacción con datos explícitos
-        const txParams = {
-            to: CONTRACT_ADDRESS,
-            from: userAddress,
-            data: encodedData,  // <- ESTO ES LO QUE NO PUEDE IR VACÍO
-            value: ethers.parseEther("0.0004"),
-            gasLimit: 150000 
-        };
+        // CAMBIO EN PASO 3: ENVÍO MANUAL
+const txParams = {
+    to: CONTRACT_ADDRESS,
+    from: userAddress,
+    data: encodedData,
+    // Usamos parseUnits para ser ultra precisos con los 18 decimales de ETH
+    value: ethers.parseUnits("0.0004", "ether"), 
+    // Bajamos un poco el gasLimit para que Base no se confunda, 100k es suficiente
+    gasLimit: 100000 
+};
 
         const tx = await signer.sendTransaction(txParams);
         

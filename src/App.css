@@ -10,33 +10,37 @@
 body {
   margin: 0;
   font-family: 'Playfair Display', serif;
-  background-color: #1a1a1a; /* Fondo de seguridad */
+  background-color: #1a1a1a;
+  overflow-x: hidden; /* Evita scroll lateral */
 }
 
-/* Contenedor Principal con Scroll */
+/* Contenedor Principal: Ahora permite scroll natural */
 .app-container {
   min-height: 100vh;
   width: 100vw;
   background-size: cover;
   background-position: center;
-  background-attachment: fixed; /* Mantiene el fondo quieto al hacer scroll */
+  background-attachment: fixed; /* Fondo inamovible */
   display: flex;
   flex-direction: column;
 }
 
 .overlay {
   flex: 1;
-  background: rgba(0, 0, 0, 0.6); /* Oscurecemos para legibilidad */
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(3px);
-  padding: 40px 20px;
+  padding: 60px 20px; /* Más espacio arriba y abajo */
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* Alineación vertical */
+  align-items: center; /* Centrado horizontal */
+  width: 100%;
 }
 
 .main-content {
   width: 100%;
   max-width: 1100px;
   text-align: center;
+  flex: 1 0 auto; /* Permite que el contenido ocupe el espacio necesario */
 }
 
 /* Header Estilo Templo */
@@ -61,7 +65,14 @@ body {
   font-weight: bold;
 }
 
-/* Grid de Columnas (Escriba y Archivo) */
+.gold-separator { 
+  width: 80px; 
+  height: 3px; 
+  background: #84754e; 
+  margin: 15px auto; 
+}
+
+/* Grid de Columnas */
 .grid-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -69,14 +80,14 @@ body {
   margin-bottom: 40px;
 }
 
-/* Cartas de Mármol Glassmorphism */
+/* Cartas de Mármol */
 .glass-card {
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   padding: 30px;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px; /* Bordes ligeramente curvos pero elegantes */
+  border-radius: 8px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
   transition: all 0.4s ease;
   display: flex;
@@ -86,240 +97,18 @@ body {
 .glass-card:hover {
   border-color: #84754e;
   transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(132, 117, 78, 0.2);
 }
 
 .card-label {
   font-family: 'Cinzel', serif;
-  color: #d4af37; /* Oro más brillante para títulos internos */
+  color: #d4af37;
   font-size: 1rem;
   margin-bottom: 20px;
   border-bottom: 1px solid rgba(132, 117, 78, 0.3);
   padding-bottom: 10px;
 }
 
-/* Editor (El Escriba) */
-.greek-textarea {
-  width: 100%;
-  height: 150px;
-  background: rgba(253, 250, 240, 0.95); /* Tono marfil/pergamino */
-  border: none;
-  padding: 20px;
-  font-family: 'Playfair Display', serif;
-  font-size: 1.15rem;
-  color: #2c2c2c;
-  outline: none;
-  resize: none;
-  border-radius: 4px;
-}
-
-/* Botones */
-.btn-primary {
-  width: 100%;
-  padding: 18px;
-  background: #84754e;
-  color: white;
-  border: none;
-  font-family: 'Cinzel', serif;
-  letter-spacing: 3px;
-  cursor: pointer;
-  margin-top: 15px;
-  transition: 0.3s;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: #a39265;
-  box-shadow: 0 0 15px rgba(132, 117, 78, 0.5);
-}
-
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Buscador y Resultados */
-.search-wrap {
-  display: flex;
-  background: #fff;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.greek-input {
-  flex: 1;
-  padding: 15px;
-  border: none;
-  outline: none;
-  font-family: monospace;
-  font-size: 0.8rem;
-}
-
-.btn-gold {
-  width: 70px;
-  background: #84754e;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.result-display {
-  margin-top: 20px;
-  padding: 20px;
-  background: rgba(253, 250, 240, 0.1);
-  border-left: 3px solid #d4af37;
-  text-align: left;
-}
-
-.result-text {
-  font-size: 1.2rem;
-  font-style: italic;
-  color: #f0eada;
-  line-height: 1.6;
-}
-
-.result-date {
-  font-size: 0.7rem;
-  color: #84754e;
-  margin-top: 10px;
-  text-transform: uppercase;
-}
-
-/* Mensajes de Estado */
-.status-msg { margin-top: 20px; }
-.success-box {
-  border: 1px solid #84754e;
-  padding: 15px;
-  background: rgba(0,0,0,0.4);
-}
-
-.cid-display {
-  font-family: monospace;
-  font-size: 0.7rem;
-  color: #aaa;
-  word-break: break-all;
-  margin: 10px 0;
-}
-
-/* Footer y Manifesto */
-.manifesto-box {
-  margin-top: 60px;
-  padding: 30px;
-  border-top: 1px solid rgba(132, 117, 78, 0.3);
-  color: #f0eada;
-  font-style: italic;
-  opacity: 0.7;
-}
-
-.main-footer {
-  padding: 20px;
-  color: #84754e;
-  font-size: 0.7rem;
-  letter-spacing: 4px;
-}
-
-/* Responsividad para móviles */
-@media (max-width: 600px) {
-  .grid-container {
-    grid-template-columns: 1fr;
-  }
-  .title-ethos {
-    letter-spacing: 5px;
-  }
-}
-
-/* Efecto clicable para el previo */
-.clickable {
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-.clickable:hover { transform: scale(1.02); }
-
-.read-more {
-  font-family: 'Cinzel', serif;
-  font-size: 0.7rem;
-  color: #d4af37;
-  margin-top: 10px;
-  letter-spacing: 1px;
-}
-
-/* MODAL STYLES */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(10px);
-}
-
-.modal-content {
-  background: rgba(253, 250, 240, 0.95); /* Fondo pergamino */
-  width: 90%;
-  max-width: 800px;
-  max-height: 80vh;
-  padding: 40px;
-  border-radius: 8px;
-  position: relative;
-  border: 2px solid #84754e;
-  display: flex;
-  flex-direction: column;
-}
-
-.close-modal {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: #84754e;
-  cursor: pointer;
-}
-
-/* BARRA DE SCROLLING ESTILO GRIEGO */
-.full-text-scroll {
-  overflow-y: auto;
-  margin-top: 20px;
-  padding-right: 15px;
-  text-align: left;
-}
-
-/* Personalización de la barra de scroll */
-.full-text-scroll::-webkit-scrollbar {
-  width: 8px;
-}
-.full-text-scroll::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-}
-.full-text-scroll::-webkit-scrollbar-thumb {
-  background: #84754e;
-  border-radius: 4px;
-}
-
-.result-text-large {
-  font-size: 1.4rem;
-  line-height: 1.8;
-  color: #2c2c2c;
-  font-style: italic;
-  white-space: pre-wrap; /* Mantiene los saltos de línea */
-}
-
-.cid-footer {
-  margin-top: 20px;
-  font-family: monospace;
-  font-size: 0.7rem;
-  color: #888;
-  border-top: 1px solid rgba(0,0,0,0.1);
-  padding-top: 10px;
-}
-
-/* Scribe Tools Container */
+/* Scribe Tools */
 .scribe-tools {
   display: flex;
   justify-content: space-between;
@@ -341,11 +130,6 @@ body {
   outline: none;
 }
 
-.tool-select option {
-  background: #1a1a1a;
-  color: #fff;
-}
-
 .size-controls {
   display: flex;
   align-items: center;
@@ -360,27 +144,139 @@ body {
   height: 24px;
   border-radius: 50%;
   cursor: pointer;
-  font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: 0.2s;
 }
 
-.btn-tool:hover {
-  background: #d4af37;
-  color: #000;
-}
+.size-display { color: #fff; font-family: monospace; font-size: 0.8rem; }
 
-.size-display {
-  color: #fff;
-  font-family: monospace;
-  font-size: 0.8rem;
-  min-width: 20px;
-}
-
-/* Ajuste para que la textarea encaje con las herramientas */
+/* Editor */
 .greek-textarea {
-  border-radius: 0 0 4px 4px !important;
-  border-top: 1px solid rgba(0,0,0,0.1);
+  width: 100%;
+  height: 180px;
+  background: rgba(253, 250, 240, 0.95);
+  border: none;
+  padding: 20px;
+  font-family: 'Playfair Display', serif;
+  color: #2c2c2c;
+  outline: none;
+  resize: none;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Botones */
+.btn-primary, .btn-gold {
+  padding: 18px;
+  background: #84754e;
+  color: white;
+  border: none;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-primary:hover, .btn-gold:hover { background: #a39265; }
+
+/* Buscador */
+.search-wrap {
+  display: flex;
+  background: #fff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.greek-input {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  outline: none;
+  font-family: monospace;
+}
+
+/* Resultados */
+.result-display {
+  margin-top: 20px;
+  padding: 20px;
+  background: rgba(253, 250, 240, 0.1);
+  border-left: 3px solid #d4af37;
+  text-align: left;
+}
+
+.result-text {
+  font-size: 1.2rem;
+  font-style: italic;
+  color: #f0eada;
+  line-height: 1.6;
+}
+
+.clickable { cursor: pointer; transition: 0.2s; }
+.clickable:hover { transform: scale(1.01); }
+
+/* Manifesto y Footer (Ahora accesibles con scroll) */
+.manifesto-box {
+  margin-top: 80px;
+  padding: 40px;
+  border-top: 1px solid rgba(132, 117, 78, 0.3);
+  color: #f0eada;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.main-footer {
+  flex-shrink: 0; /* Evita que el footer se achique */
+  padding: 40px 0;
+  color: #84754e;
+  font-size: 0.7rem;
+  letter-spacing: 4px;
+  width: 100%;
+}
+
+/* MODAL STYLES (Corregido) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(10px);
+}
+
+.modal-content {
+  background: rgba(253, 250, 240, 0.98);
+  width: 90%;
+  max-width: 800px;
+  max-height: 85vh;
+  padding: 40px;
+  border-radius: 4px;
+  position: relative;
+  border: 2px solid #84754e;
+  display: flex;
+  flex-direction: column;
+}
+
+.full-text-scroll {
+  overflow-y: auto;
+  margin-top: 20px;
+  padding-right: 10px;
+  text-align: left;
+}
+
+.result-text-large {
+  font-size: 1.4rem;
+  line-height: 1.8;
+  color: #1a1a1a;
+  white-space: pre-wrap;
+}
+
+/* Responsividad */
+@media (max-width: 600px) {
+  .grid-container { grid-template-columns: 1fr; }
+  .overlay { padding: 30px 15px; }
 }

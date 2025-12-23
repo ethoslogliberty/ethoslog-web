@@ -60,7 +60,7 @@ export const publishPost = async (content) => {
     const contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, signer);
     
     // Bajamos el fee a 0.0001 ETH (aprox 0.30 USD) acorde a la eficiencia de Base
-    const fee = ethers.parseEther("0.0001"); 
+    const fee = ethers.parseEther("0.0004");
 
     try {
         // --- PASO 1: SIMULACIÓN EN BASE ---

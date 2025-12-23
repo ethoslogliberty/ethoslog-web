@@ -116,7 +116,7 @@ function App() {
             <p>"En la intersección de la razón clásica y la criptografía moderna..."</p>
           </div>
 
-          <footer className="main-footer">ETHEREUM MAINNET • RED IPFS • MMXXV</footer>
+          <footer className="main-footer">BASE MAINNET • RED IPFS • MMXXV</footer>
         </div>
       </div>
     </div>
